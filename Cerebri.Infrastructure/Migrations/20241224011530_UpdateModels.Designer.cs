@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cerebri.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241222163522_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241224011530_UpdateModels")]
+    partial class UpdateModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,7 +71,7 @@ namespace Cerebri.Infrastructure.Migrations
 
                     b.HasKey("JournalEntryId", "MoodId");
 
-                    b.ToTable("JournalEntryMoodModel");
+                    b.ToTable("JournalEntryMoods");
                 });
 
             modelBuilder.Entity("Cerebri.Domain.Entities.UserModel", b =>

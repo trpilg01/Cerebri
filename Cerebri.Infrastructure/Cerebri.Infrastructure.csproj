@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Cerebri.Domain\Cerebri.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

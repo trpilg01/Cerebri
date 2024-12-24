@@ -7,5 +7,6 @@ namespace Cerebri.Application.Interfaces
     {
         Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<eMoods> moodTags);
         Task<IEnumerable<JournalEntryModel?>> GetJournalEntriesAsync(Guid userId);
+        Task UpdateJournalEntryAsync(JournalEntryModel journalEntry, List<eMoods> moodTags);
     }
 }

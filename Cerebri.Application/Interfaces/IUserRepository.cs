@@ -7,6 +7,7 @@ namespace Cerebri.Application.Interfaces
         Task InsertAsync(UserModel newUser);
         Task<UserModel?> GetByIdAsync(Guid id);
         Task<UserModel?> GetByEmailAsync(string email);
-        Task DeleteAsync(Guid id);
+        Task UpdateAsync(UserModel user);
+        Task DeleteAsync(UserModel user);
     }
 }

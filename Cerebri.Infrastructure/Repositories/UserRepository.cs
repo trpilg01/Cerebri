@@ -31,14 +31,16 @@ namespace Cerebri.Infrastructure.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(UserModel user)
         {
-            var user = await GetByIdAsync(id);
-            if (user != null)
-            {
-                _context.Remove(user);
-                await _context.SaveChangesAsync();
-            }
+            _context.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(UserModel user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

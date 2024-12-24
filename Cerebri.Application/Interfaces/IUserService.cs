@@ -10,5 +10,7 @@ namespace Cerebri.Application.Interfaces
     public interface IUserService
     {
         Task CreateUserAsync(UserModel newUser);
+        Task DeleteUserAsync(Guid userId);
+        Task UpdateUserAsync(Guid userId);
     }
 }

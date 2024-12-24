@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cerebri.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class UpdateModels : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,7 +50,7 @@ namespace Cerebri.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "JournalEntryMoodModel",
+                name: "JournalEntryMoods",
                 columns: table => new
                 {
                     JournalEntryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -58,9 +58,9 @@ namespace Cerebri.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JournalEntryMoodModel", x => new { x.JournalEntryId, x.MoodId });
+                    table.PrimaryKey("PK_JournalEntryMoods", x => new { x.JournalEntryId, x.MoodId });
                     table.ForeignKey(
-                        name: "FK_JournalEntryMoodModel_JournalEntries_JournalEntryId",
+                        name: "FK_JournalEntryMoods_JournalEntries_JournalEntryId",
                         column: x => x.JournalEntryId,
                         principalTable: "JournalEntries",
                         principalColumn: "Id",
@@ -77,7 +77,7 @@ namespace Cerebri.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "JournalEntryMoodModel");
+                name: "JournalEntryMoods");
 
             migrationBuilder.DropTable(
                 name: "JournalEntries");

@@ -11,10 +11,12 @@ namespace Cerebri.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -24,7 +26,10 @@ namespace Cerebri.API.Controllers
             {
                 var token = await _authService.AuthenticateUser(request.Email, request.Password);
                 if (token == null)
+                {
+                    _logger.LogInformation($"Login request failed: {request.Email}");
                     return BadRequest("Could not validate credentials");
+                }
 
                 return Ok(new TokenResponseDTO(token));
             }

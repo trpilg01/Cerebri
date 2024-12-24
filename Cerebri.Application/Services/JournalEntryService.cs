@@ -27,5 +27,15 @@ namespace Cerebri.Application.Services
         {
             return await _journalEntryRepository.GetByUserIdAsync(userId);
         }
+
+        public async Task UpdateJournalEntryAsync(JournalEntryModel journalEntry, List<eMoods> moodTags)
+        {
+            foreach (eMoods moodTag in moodTags)
+            {
+                journalEntry.MoodTags.Add(new JournalEntryMoodModel(moodTag));
+            }
+
+            await _journalEntryRepository.UpdateAsync(journalEntry);
+        }
     }
 }

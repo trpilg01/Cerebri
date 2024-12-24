@@ -11,6 +11,7 @@ namespace Cerebri.Application.Interfaces
     {
         Task InsertAsync(JournalEntryModel journalEntry);
         Task<IEnumerable<JournalEntryModel?>> GetByUserIdAsync(Guid userId);
+        Task UpdateAsync(JournalEntryModel journalEntry);
         Task DeleteAsync(Guid id);        
     }
 }

@@ -15,11 +15,13 @@ namespace Cerebri.API.Controllers
     public class JournalEntryController : ControllerBase
     {
         private readonly IJournalEntryService _journalEntryService;
+        private readonly ILogger<JournalEntryController> _logger;
         private readonly IMapper _mapper;
 
-        public JournalEntryController(IJournalEntryService journalEntryService, IMapper mapper)
+        public JournalEntryController(IJournalEntryService journalEntryService, ILogger<JournalEntryController> logger, IMapper mapper)
         {
             _journalEntryService = journalEntryService;
+            _logger = logger;
             _mapper = mapper;
         }
 
@@ -40,6 +42,28 @@ namespace Cerebri.API.Controllers
                 return Ok();
             }
             catch (Exception ex)    
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateJournalEntry([FromBody] UpdateJournalEntryDTO request)
+        {
+            var userIdClaim = User.FindFirst("userId");
+            if (userIdClaim == null)
+                return Unauthorized("Cannot find user");
+
+            var userId = Guid.Parse(userIdClaim.Value);
+
+            try
+            {
+                var entry = _mapper.Map<JournalEntryModel>(request);
+                entry.UserId = userId;
+                await _journalEntryService.UpdateJournalEntryAsync(entry, request.MoodTags);
+                return Ok();
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
