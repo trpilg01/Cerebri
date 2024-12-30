@@ -22,13 +22,31 @@ namespace Cerebri.Infrastructure.Repositories
             try
             {
                 var entry = await _context.JournalEntries.FindAsync(id);
-                if (entry != null)
-                    _context.JournalEntries.Remove(entry);
+                
+                if (entry == null)
+                {
+                    throw new Exception("Entry to be deleted does not exist");
+                }
+
+                _context.JournalEntries.Remove(entry);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(ex.InnerException?.Message ?? ex.Message);
+            }
+        }
+
+        public async Task<JournalEntryModel?> GetByIdAsync(Guid id)
+        {
+            try
+            {
+                return await _context.JournalEntries.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.InnerException?.Message ?? ex.Message);
+                throw new Exception(ex.InnerException?.Message ?? ex.Message);
             }
         }
 
@@ -61,38 +79,42 @@ namespace Cerebri.Infrastructure.Repositories
 
         }
 
-        public async Task UpdateAsync(JournalEntryModel journalEntry)
+        public async Task UpdateAsync(JournalEntryModel updatedEntry)
         {
             try
             {
                 var existingEntry = await _context.JournalEntries
-                    .Include(e => e.MoodTags)
-                    .FirstOrDefaultAsync(e => e.Id == journalEntry.Id);
+                    .Include(x => x.MoodTags)
+                    .FirstOrDefaultAsync(x => x.Id == updatedEntry.Id);
 
                 if (existingEntry == null)
                 {
-                    throw new Exception($"Journal entry with ID {journalEntry.Id} does not exist");
+                    throw new Exception("Journal entry does not exist");
                 }
 
-                existingEntry.Title = journalEntry.Title;
-                existingEntry.Content = journalEntry.Content;
-                existingEntry.UpdatedAt = DateTime.UtcNow;
+                existingEntry.Title = updatedEntry.Title;
+                existingEntry.Content = updatedEntry.Content;
 
-                if (journalEntry.MoodTags != null)
+                // JournalEntry Moods
+                var journalEntryMoods = await _context.JournalEntryMoods
+                    .Where(x => x.JournalEntryId == existingEntry.Id)
+                    .ToListAsync();
+
+                // Remove current and replace with new
+                if (journalEntryMoods != null)
                 {
-                    existingEntry.MoodTags.Clear();
+                    _context.JournalEntryMoods.RemoveRange(journalEntryMoods);
+                    _context.JournalEntryMoods.AddRange(updatedEntry.MoodTags);
+                }
 
-                    foreach (var newTag in journalEntry.MoodTags)
-                    {
-                        if (!existingEntry.MoodTags.Any(x => x.MoodId == newTag.MoodId))
-                        {
-                            existingEntry.MoodTags.Add(newTag);
-                        }
-                    }
+                existingEntry.MoodTags.Clear();
+
+                foreach(var moodTag in updatedEntry.MoodTags)
+                {
+                    existingEntry.MoodTags.Add(moodTag);
                 }
 
                 _context.JournalEntries.Update(existingEntry);
-
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

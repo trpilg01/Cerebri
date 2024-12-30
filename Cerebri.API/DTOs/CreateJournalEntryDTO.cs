@@ -7,6 +7,6 @@ namespace Cerebri.API.DTOs
     {
         public string Title { get; set; } = string.Empty;
         public string Content {  get; set; } = string.Empty;
-        public List<eMoods> Moods { get; set; } = new List<eMoods>();
+        public List<JournalEntryMoodModel> Moods { get; set; } = new List<JournalEntryMoodModel>();
     }
 }

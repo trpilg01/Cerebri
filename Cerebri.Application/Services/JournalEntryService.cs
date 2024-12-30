@@ -13,14 +13,14 @@ namespace Cerebri.Application.Services
             _journalEntryRepository = journalEntryRepository;
         }
 
-        public async Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<eMoods> moodTags)
+        public async Task CreateJournalEntryAsync(JournalEntryModel journalEntry)
         {
-            foreach (eMoods moodTag in moodTags)
-            {
-                journalEntry.MoodTags.Add(new JournalEntryMoodModel(moodTag));
-            }
-
             await _journalEntryRepository.InsertAsync(journalEntry);
+        }
+
+        public async Task DeleteJournalEntryAsync(Guid entryId)
+        {
+            await _journalEntryRepository.DeleteAsync(entryId);
         }
 
         public async Task<IEnumerable<JournalEntryModel?>> GetJournalEntriesAsync(Guid userId)
@@ -28,14 +28,14 @@ namespace Cerebri.Application.Services
             return await _journalEntryRepository.GetByUserIdAsync(userId);
         }
 
-        public async Task UpdateJournalEntryAsync(JournalEntryModel journalEntry, List<eMoods> moodTags)
+        public async Task UpdateJournalEntryAsync(JournalEntryModel updatedEntry, List<MoodModel> moods)
         {
-            foreach (eMoods moodTag in moodTags)
+            foreach (var mood in moods)
             {
-                journalEntry.MoodTags.Add(new JournalEntryMoodModel(moodTag));
+                updatedEntry.MoodTags.Add(new JournalEntryMoodModel(updatedEntry.Id, mood.Id));
             }
 
-            await _journalEntryRepository.UpdateAsync(journalEntry);
+            await _journalEntryRepository.UpdateAsync(updatedEntry);
         }
     }
 }

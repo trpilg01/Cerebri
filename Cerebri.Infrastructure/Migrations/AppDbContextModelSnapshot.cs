@@ -60,15 +60,44 @@ namespace Cerebri.Infrastructure.Migrations
 
             modelBuilder.Entity("Cerebri.Domain.Entities.JournalEntryMoodModel", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("JournalEntryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("MoodId")
                         .HasColumnType("int");
 
-                    b.HasKey("JournalEntryId", "MoodId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("JournalEntryId");
+
+                    b.HasIndex("MoodId");
 
                     b.ToTable("JournalEntryMoods");
+                });
+
+            modelBuilder.Entity("Cerebri.Domain.Entities.MoodModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Moods");
                 });
 
             modelBuilder.Entity("Cerebri.Domain.Entities.UserModel", b =>
@@ -126,7 +155,15 @@ namespace Cerebri.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Cerebri.Domain.Entities.MoodModel", "Mood")
+                        .WithMany()
+                        .HasForeignKey("MoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("JournalEntry");
+
+                    b.Navigation("Mood");
                 });
 
             modelBuilder.Entity("Cerebri.Domain.Entities.JournalEntryModel", b =>

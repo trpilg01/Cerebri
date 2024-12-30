@@ -1,25 +1,38 @@
 ﻿using Cerebri.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+
 
 namespace Cerebri.Domain.Entities
 {
     public class JournalEntryMoodModel
     {
-        public Guid? JournalEntryId { get; set; }
+        public Guid Id { get; set; }
+        public Guid JournalEntryId { get; set; }
 
         [JsonIgnore]
         public JournalEntryModel? JournalEntry { get; set; }
-        public eMoods MoodId { get; set; }
+
+        [Required]
+        [Range(1, 102)]
+        public int MoodId { get; set; }
+        
+        [JsonIgnore]
+        public MoodModel? Mood { get; set; }
+
         public JournalEntryMoodModel() { }
 
-        public JournalEntryMoodModel(eMoods mood)
+        public JournalEntryMoodModel(int moodId)
         {
-            MoodId = mood;
+            Id = Guid.NewGuid();
+            MoodId = moodId;
+        }
+
+        public JournalEntryMoodModel(Guid journalId, int moodId)
+        {
+            Id = Guid.NewGuid();
+            JournalEntryId = journalId;
+            MoodId = moodId;
         }
     }
 }

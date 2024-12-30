@@ -38,7 +38,7 @@ namespace Cerebri.API.Controllers
             {
                 var entry = _mapper.Map<JournalEntryModel>(request);
                 entry.UserId = userId;
-                await _journalEntryService.CreateJournalEntryAsync(entry, request.Moods);
+                await _journalEntryService.CreateJournalEntryAsync(entry);
                 return Ok();
             }
             catch (Exception ex)    
@@ -52,20 +52,21 @@ namespace Cerebri.API.Controllers
         {
             var userIdClaim = User.FindFirst("userId");
             if (userIdClaim == null)
+            {
                 return Unauthorized("Cannot find user");
-
+            }
             var userId = Guid.Parse(userIdClaim.Value);
 
             try
             {
                 var entry = _mapper.Map<JournalEntryModel>(request);
                 entry.UserId = userId;
-                await _journalEntryService.UpdateJournalEntryAsync(entry, request.MoodTags);
+                await _journalEntryService.UpdateJournalEntryAsync(entry, request.Moods);
                 return Ok();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(ex.InnerException?.Message ?? ex.Message);
             }
         }
 
@@ -87,6 +88,19 @@ namespace Cerebri.API.Controllers
             {
                 throw new Exception(ex.Message);
             }
+        }
+        
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete([FromBody] Guid entryId)
+        {
+            var userIdClaim = User.FindFirst("userId");
+            if (userIdClaim == null)
+            {
+                return Unauthorized("Invalid Token");
+            }
+
+            await _journalEntryService.DeleteJournalEntryAsync(entryId);
+            return Ok();
         }
     }
 }

@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
+
 builder.Host.UseSerilog();
 
 // JWT Settings
@@ -24,6 +25,18 @@ var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
 var issuer = jwtSettingsSection["Issuer"];
 var audience = jwtSettingsSection["Audience"];
 var key = jwtSettingsSection["Key"];
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:53767/")
+            .AllowAnyHeader()
+            .AllowAnyOrigin()
+            .AllowAnyMethod();
+    });
+});
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -38,6 +51,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJournalEntryService, JournalEntryService>();
 builder.Services.AddScoped<IJournalEntryRepository, JournalEntryRepository>();
+builder.Services.AddScoped<IMoodRepository, MoodRepository>();
+builder.Services.AddScoped<IMoodService, MoodService>();
 
 // Authentication
 builder.Services.AddAuthentication(options =>
@@ -128,6 +143,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+var urls = app.Urls;
+Console.WriteLine("Application URLs:");
+foreach (var url in urls)
+{
+    Console.WriteLine(url);
+}
+
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

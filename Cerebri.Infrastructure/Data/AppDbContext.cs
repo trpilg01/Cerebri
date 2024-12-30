@@ -8,6 +8,7 @@ namespace Cerebri.Infrastructure.Data
         public DbSet<UserModel> Users { get; set; }
         public DbSet<JournalEntryModel> JournalEntries { get; set; }
         public DbSet<JournalEntryMoodModel> JournalEntryMoods { get; set; }
+        public DbSet<MoodModel> Moods { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -64,13 +65,31 @@ namespace Cerebri.Infrastructure.Data
                     .HasDefaultValueSql("GETUTCDATE()");
             });
 
+            modelBuilder.Entity<MoodModel>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(x => x.Type)
+                    .IsRequired();
+            });
+
             modelBuilder.Entity<JournalEntryMoodModel>(entity =>
             {
-                entity.HasKey(x => new { x.JournalEntryId, x.MoodId });
+                entity.HasKey(x => x.Id);
 
                 entity.HasOne(x => x.JournalEntry)
-                      .WithMany(x => x.MoodTags)
-                      .HasForeignKey(x => x.JournalEntryId);
+                    .WithMany(x => x.MoodTags)
+                    .HasForeignKey(x => x.JournalEntryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Mood)
+                    .WithMany()
+                    .HasForeignKey(x => x.MoodId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

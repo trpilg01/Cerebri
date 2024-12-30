@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cerebri.API", "Cerebri.API\Cerebri.API.csproj", "{BD2D7096-E478-4398-91EF-B97DE0CDF389}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cerebri.Domain", "Cerebri.Domain\Cerebri.Domain.csproj", "{B9900093-9F95-441A-85BA-6DE1B413B183}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cerebri.Infrastructure", "Cerebri.Infrastructure\Cerebri.Infrastructure.csproj", "{D70FF607-BBDE-44CD-B735-E8017B59C0FB}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cerebri.webclient", "Cerebri.WebClient\cerebri.webclient.esproj", "{9D137FB9-C229-4931-999E-EEED31B0CCC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,12 @@ Global
 		{D70FF607-BBDE-44CD-B735-E8017B59C0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D70FF607-BBDE-44CD-B735-E8017B59C0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D70FF607-BBDE-44CD-B735-E8017B59C0FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D137FB9-C229-4931-999E-EEED31B0CCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D137FB9-C229-4931-999E-EEED31B0CCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D137FB9-C229-4931-999E-EEED31B0CCC3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9D137FB9-C229-4931-999E-EEED31B0CCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D137FB9-C229-4931-999E-EEED31B0CCC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D137FB9-C229-4931-999E-EEED31B0CCC3}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
