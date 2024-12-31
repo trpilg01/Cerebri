@@ -30,7 +30,10 @@ namespace Cerebri.API.Controllers
         {
             var userIdClaim = User.FindFirst("userId");
             if (userIdClaim == null)
+            {
+                _logger.LogInformation("Invalid Token received");
                 return Unauthorized("Cannot find user");
+            }
 
             var userId = Guid.Parse(userIdClaim.Value);
 
@@ -38,8 +41,8 @@ namespace Cerebri.API.Controllers
             {
                 var entry = _mapper.Map<JournalEntryModel>(request);
                 entry.UserId = userId;
-                await _journalEntryService.CreateJournalEntryAsync(entry);
-                return Ok();
+                await _journalEntryService.CreateJournalEntryAsync(entry, request.Moods);
+                return Ok("Journal Entry Created");
             }
             catch (Exception ex)    
             {
@@ -53,6 +56,7 @@ namespace Cerebri.API.Controllers
             var userIdClaim = User.FindFirst("userId");
             if (userIdClaim == null)
             {
+                _logger.LogInformation("Invalid Token received");
                 return Unauthorized("Cannot find user");
             }
             var userId = Guid.Parse(userIdClaim.Value);
@@ -75,7 +79,10 @@ namespace Cerebri.API.Controllers
         {
             var userIdClaim = User.FindFirst("userId");
             if (userIdClaim == null)
+            {
+                _logger.LogInformation("Invalid Token received");
                 return Unauthorized("Cannot find user");
+            }
 
             var userId = Guid.Parse(userIdClaim.Value);
 
@@ -91,15 +98,16 @@ namespace Cerebri.API.Controllers
         }
         
         [HttpPost("delete")]
-        public async Task<IActionResult> Delete([FromBody] Guid entryId)
+        public async Task<IActionResult> Delete([FromBody] DeleteJournalRequestDTO request)
         {
             var userIdClaim = User.FindFirst("userId");
             if (userIdClaim == null)
             {
+                _logger.LogInformation("Invalid Token received");
                 return Unauthorized("Invalid Token");
             }
 
-            await _journalEntryService.DeleteJournalEntryAsync(entryId);
+            await _journalEntryService.DeleteJournalEntryAsync(request.EntryId);
             return Ok();
         }
     }

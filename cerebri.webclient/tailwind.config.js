@@ -14,6 +14,9 @@ export default {
         pearlLusta: '#fcf2d9',
         astra: '#fbeac6',
         loblolly: '#c3c9ca',
+      },
+      fontFamily: {
+        openSans: ['Open Sans']
       }
     },
   },

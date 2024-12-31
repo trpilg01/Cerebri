@@ -23,5 +23,12 @@ namespace Cerebri.Infrastructure.Repositories
         {
             return await _context.Moods.ToListAsync();
         }
+
+        public async Task<List<MoodModel>> GetMoodsByIdAsync(List<int> ids)
+        {
+            return await _context.Moods
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+        }
     }
 }

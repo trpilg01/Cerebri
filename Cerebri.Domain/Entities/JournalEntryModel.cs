@@ -6,6 +6,7 @@ namespace Cerebri.Domain.Entities
 {
     public class JournalEntryModel
     {
+        [Required]
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "A UserId is required")]

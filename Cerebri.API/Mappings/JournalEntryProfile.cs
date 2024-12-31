@@ -12,7 +12,7 @@ namespace Cerebri.API.Mappings
                 .ForMember(dest => dest.UserId, opt => opt.UseDestinationValue())
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
-                .ForMember(dest => dest.MoodTags, opt => opt.MapFrom(src => src.Moods))
+                .ForMember(dest => dest.MoodTags, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
@@ -24,6 +24,12 @@ namespace Cerebri.API.Mappings
                 .ForMember(dest => dest.MoodTags, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+
+            CreateMap<JournalEntryModel, JournalsResponseDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Moods, opt => opt.MapFrom(src => src.MoodTags))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
 }
