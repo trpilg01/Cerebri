@@ -26,7 +26,7 @@ const CheckIns = () => {
 
     return(
 <div className="h-full w-full flex flex-col justify-center items-center bg-pearlLusta">
-            <h1 className="text-2xl font-bold">Journals</h1>
+            <h1 className="text-2xl font-bold">Check-Ins</h1>
             <div className="h-5/6 w-5/6 mt-10 overflow-y-scroll scrollbar-none">
                 <table className="w-full bg-blizzardBlue rounded-md shadow-xl">
                     <thead>

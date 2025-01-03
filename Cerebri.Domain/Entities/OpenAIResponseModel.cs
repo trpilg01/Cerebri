@@ -8,8 +8,8 @@ namespace Cerebri.Domain.Entities
 {
     public class OpenAIResponseModel
     {
-        public String Summary { get; set; }
-        public String Insights { get; set; }
+        public string Summary { get; set; }
+        public string Insights { get; set; }
         
         public OpenAIResponseModel(string summary, string insights)
         {

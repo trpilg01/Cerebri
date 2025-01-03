@@ -41,3 +41,9 @@ export interface CreateCheckIn {
     content: string
     moods: Mood[]
 }
+
+export interface ReportData {
+    id: string
+    reportName: string
+    createdAt: Date
+}

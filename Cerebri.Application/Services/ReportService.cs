@@ -18,9 +18,14 @@ namespace Cerebri.Application.Services
         public async Task<ReportModel?> GenerateReport(Guid userId)
         {
             var journals = await _journalEntryRepository.GetByUserIdAsync(userId);
-            var filteredJournals = journals.Where(x => x?.Content.Length > 0).ToList();
-            var report = await _generator.GenerateReport(filteredJournals);
-            return report;
+            var filteredJournals = journals.Where(x => x!= null && x?.Content.Length > 0).ToList();
+
+            if (filteredJournals != null)
+            {
+                var report = await _generator.GenerateReport(filteredJournals, userId);
+                return report;
+            }
+            return null;
         }
 
         public async Task<ReportModel?> GetById(Guid id)

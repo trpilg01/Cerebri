@@ -34,6 +34,7 @@ namespace Cerebri.Infrastructure.Repositories
             try
             {
                 await _context.Reports.AddAsync(reportModel);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {

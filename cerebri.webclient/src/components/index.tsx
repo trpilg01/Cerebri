@@ -9,3 +9,4 @@ export { default as ErrorPopUp } from './ErrorPopUp/ErrorPopUp';
 export { default as WriteComponent } from './WriteComponent/WriteComponent';
 export { default as CheckIns } from './CheckIns/CheckIns';
 export { default as CheckIn } from './CheckIn/CheckIn';
+export { default as MoodReports } from './MoodReports/MoodReports';

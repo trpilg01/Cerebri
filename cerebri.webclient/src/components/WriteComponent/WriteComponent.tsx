@@ -92,8 +92,8 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
                     <h1 className="text-lg font-semibold">Selected Moods</h1>
                     
                     <div className="flex flex-row flex-wrap h-24 mt-5">
-                    {selectedMoods.length === 0 ? <h1>No moods Selected</h1> : selectedMoods.map((mood) => (
-                        <a className="m-1">{mood.name}</a>
+                    {selectedMoods.length === 0 ? <h1 className="font-semibold">No moods Selected</h1> : selectedMoods.map((mood) => (
+                        <a className="m-1 font-semibold">{mood.name}</a>
                     ))}
                     </div>
 
@@ -104,7 +104,7 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
                             <button
                                 id={mood.id}
                                 onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-green-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}
+                                className={`h-fit w-fit bg-green-400 font-semibold p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}
                             >
                                 {mood.name}
                             </button>   
@@ -115,7 +115,7 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
                             <button
                                 id={mood.id}
                                 onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-blue-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}                            >
+                                className={`h-fit w-fit bg-blue-400 p-1 m-1 font-semibold rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}                            >
                                 {mood.name}
                             </button>   
                         ))}
@@ -125,7 +125,7 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
                             <button
                                 id={mood.id}
                                 onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-yellow-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}                            >
+                                className={`h-fit w-fit bg-yellow-400 p-1 m-1 font-semibold rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}                            >
                                 {mood.name}
                             </button>   
                         ))}
@@ -135,7 +135,7 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
                             <button
                                 id={mood.id}
                                 onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-red-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}
+                                className={`h-fit w-fit bg-red-400 p-1 m-1 font-semibold rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}
                             >
                                 {mood.name}
                             </button>   

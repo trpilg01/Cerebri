@@ -9,14 +9,16 @@ namespace Cerebri.Infrastructure.ReportGeneration
     {
         private readonly IConverter _converter;
         private readonly IOpenAIConnector _openAIConnector;
+        private readonly IReportRepository _reportRepository;
 
-        public ReportGenerator(IConverter converter, IOpenAIConnector connector)
+        public ReportGenerator(IConverter converter, IOpenAIConnector connector, IReportRepository repository)
         {
             _converter = converter;
             _openAIConnector = connector;
+            _reportRepository = repository;
         }
 
-        public async Task<ReportModel?> GenerateReport(List<JournalEntryModel> journals)
+        public async Task<ReportModel?> GenerateReport(List<JournalEntryModel?>? journals, Guid userId)
         {
             if (journals == null || journals.Count == 0)
             {
@@ -89,15 +91,16 @@ namespace Cerebri.Infrastructure.ReportGeneration
             ReportModel report = new ReportModel
             {
                 Id = Guid.NewGuid(),
-                UserId = Guid.Empty,
+                UserId = userId,
                 ReportName = "New Report Name",
                 ReportData = reportData,
                 CreatedAt = DateTime.UtcNow
             };
+            await _reportRepository.InsertAsync(report);
             return report;
         }
 
-        public async Task<OpenAIResponseModel?> GenerateReportInfo(List<JournalEntryModel?> journals)
+        public async Task<OpenAIResponseModel?> GenerateReportInfo(List<JournalEntryModel> journals)
         {
             if (journals != null)
             {

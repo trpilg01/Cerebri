@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { CreateJournalRequest, LoginRequest, Mood, Journal, CheckIn, CreateCheckIn } from "data/dataTypes";
+import { CreateJournalRequest, LoginRequest, Mood, Journal, CheckIn, CreateCheckIn, ReportData } from "data/dataTypes";
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: "http://localhost:5091/api",
@@ -142,3 +142,34 @@ export const requestCreateCheckIn = async (request: CreateCheckIn) => {
         console.log(error, error.message);
     }
 };
+
+export const requestReports = async () => {
+    try {
+        const response = await apiClient.get('/Report');
+        const reports: ReportData[] = [];
+        response.data.forEach((item: any) => {
+            const report: ReportData = {
+                id: item['id'],
+                reportName: item['reportName'],
+                createdAt: item['createdAt']
+            };
+            reports.push(report);
+        });
+        return reports;
+    } catch (error: any) {
+        console.log(error, error.message);
+    }
+}
+
+export const requestReportStream = async (reportId: string) => {
+    try {    
+        const response = await apiClient.post('/Report/stream', reportId, {responseType: 'blob'});
+        return response.data;
+    } catch (error: any) {
+        console.log(error, error.message);
+    }
+}
+
+export const requestUserInfo = async () => {
+    return;
+}

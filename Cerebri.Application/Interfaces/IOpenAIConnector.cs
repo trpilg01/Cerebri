@@ -9,6 +9,6 @@ namespace Cerebri.Application.Interfaces
 {
     public interface IOpenAIConnector
     {
-        Task<OpenAIResponseModel> Prompt(IList<JournalEntryModel> journals);
+        Task<OpenAIResponseModel?> Prompt(IList<JournalEntryModel> journals);
     }
 }

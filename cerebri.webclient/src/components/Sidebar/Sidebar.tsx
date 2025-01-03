@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import { MdMenuOpen } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
-import { CheckIns, Home, Journals } from "..";
+import { CheckIns, Home, Journals, MoodReports } from "..";
 
 interface SidebarProps {
     setActiveComponent: (component: ReactNode) => void;
@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveComponent }) => {
                     <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<Home />)}>Home</a>
                     <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<Journals />)}>Journals</a>
                     <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<CheckIns />)}>Check-Ins</a>
-                    <a className="cursor-pointer hover:opacity-50">Mood Reports</a>
+                    <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<MoodReports />)}>Mood Reports</a>
                 </div>
 
                 <div 

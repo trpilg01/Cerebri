@@ -23,14 +23,29 @@ namespace Cerebri.Infrastructure.ReportGeneration
             ConfigureHttpClient();
         }
 
+        /// <summary>
+        /// Requests a summary of the provided journals from OpenAI
+        /// </summary>
+        /// <param name="journals"></param>
+        /// <returns>
+        /// An OpenAIResponseModel object that contains a summary (string)
+        /// and insights (string)
+        /// </returns>
         public async Task<OpenAIResponseModel?> Prompt(IList<JournalEntryModel> journals)
         {
             var payload = new StringContent(CreatePayLoad(journals), Encoding.UTF8, "application/json");
             var result = await _httpClient.PostAsync("/v1/chat/completions", payload);
             var response = await result.Content.ReadAsStringAsync();
-            return ParseResponse(response);
+            return response != null ? ParseResponse(response) : null;
         }
 
+        /// <summary>
+        /// Extracts the summary and insights from the OpenAI API response
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns>
+        /// A new OpenAIReponseModel
+        /// </returns>
         private OpenAIResponseModel? ParseResponse(string response)
         {
             try
