@@ -10,8 +10,8 @@ namespace Cerebri.Application.Interfaces
     public interface IJournalEntryRepository
     {
         Task InsertAsync(JournalEntryModel journalEntry);
-        Task<IEnumerable<JournalEntryModel?>> GetByUserIdAsync(Guid userId);
-        Task<JournalEntryModel?> GetByIdAsync(Guid id);
+        Task<IEnumerable<JournalEntryModel>> GetByUserIdAsync(Guid userId);
+        Task<JournalEntryModel> GetByIdAsync(Guid id);
         Task UpdateAsync(JournalEntryModel journalEntry);
         Task DeleteAsync(Guid id);        
     }

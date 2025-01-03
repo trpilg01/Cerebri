@@ -7,21 +7,23 @@ namespace Cerebri.Application.Services
     public class JournalEntryService : IJournalEntryService
     {
         private readonly IJournalEntryRepository _journalEntryRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMoodRepository _moodRepository;
 
-        public JournalEntryService(IJournalEntryRepository journalEntryRepository, IMoodRepository moodRepository)
+        public JournalEntryService(IJournalEntryRepository journalEntryRepository, IMoodRepository moodRepository, IUserRepository userRepository)
         {
             _journalEntryRepository = journalEntryRepository;
             _moodRepository = moodRepository;
+            _userRepository = userRepository;
         }
 
-        public async Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<MoodModel> moods)
+        public async Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<MoodModel> moods, Guid userId)
         {
             foreach (MoodModel mood in moods)
             {
                 journalEntry.MoodTags.Add(new JournalEntryMoodModel(journalEntry.Id, mood.Id));
             }
-
+            journalEntry.UserId = userId;
             await _journalEntryRepository.InsertAsync(journalEntry);
         }
 
@@ -33,7 +35,6 @@ namespace Cerebri.Application.Services
         public async Task<IEnumerable<JournalEntryResponseModel?>> GetJournalEntriesAsync(Guid userId)
         {
             List<JournalEntryResponseModel> responseModels = new List<JournalEntryResponseModel>();
-
             var journals = await _journalEntryRepository.GetByUserIdAsync(userId);
             
             if (journals == null)

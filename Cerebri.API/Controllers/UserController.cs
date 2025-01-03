@@ -13,27 +13,36 @@ namespace Cerebri.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
         private readonly ILogger<UserController> _logger;
         private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, ILogger<UserController> logger, IMapper mapper)
+        public UserController(IUserService userService, ILogger<UserController> logger, IMapper mapper, IAuthService authService)
         {
             _userService = userService;
             _logger = logger;
             _mapper = mapper;
+            _authService = authService;
         }
 
         [HttpPost("create")]
-        public async Task CreateUser([FromBody] CreateUserDTO request)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO request)
         {
-            var newUser = _mapper.Map<UserModel>(request);
             try
             {
+                var newUser = _mapper.Map<UserModel>(request);
                 await _userService.CreateUserAsync(newUser);
+                return Ok("User created successfully.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Validation error occurred while creating user");
+                return BadRequest("Validation error: " +  ex.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred");
             }
         }
 
@@ -41,24 +50,26 @@ namespace Cerebri.API.Controllers
         [HttpPost("delete")]
         public async Task<IActionResult> DeleteUser()
         {
-            var userIdClaim = User.FindFirst("userId");
-
-            if (userIdClaim == null)
-            {
-                _logger.LogInformation("Invalid token provided");
-                return Unauthorized("Cannot find user");
-            }
-
-            var userId = Guid.Parse(userIdClaim.Value);
-
             try
             {
+                Guid userId = _authService.GetUserIdFromClaims(User);
                 await _userService.DeleteUserAsync(userId);
-                return Ok("User Deleted");
+                return Ok("User deleted");
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Unauthorized(ex.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " +  ex.Message);
             }
         }
     }

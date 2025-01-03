@@ -19,64 +19,47 @@ namespace Cerebri.Infrastructure.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            try
-            {
-                var entry = await _context.JournalEntries.FindAsync(id);
-                
-                if (entry == null)
-                {
-                    throw new Exception("Entry to be deleted does not exist");
-                }
+            var entry = await _context.JournalEntries.FindAsync(id);
 
-                _context.JournalEntries.Remove(entry);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            if (entry == null)
+                throw new ArgumentException("Entry does not exist");
+
+            _context.JournalEntries.Remove(entry);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<JournalEntryModel?> GetByIdAsync(Guid id)
+        public async Task<JournalEntryModel> GetByIdAsync(Guid id)
         {
-            try
-            {
-                return await _context.JournalEntries.FindAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.InnerException?.Message ?? ex.Message);
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            return await _context.JournalEntries.FindAsync(id) ?? throw new ArgumentException("Journal entry does not exist");
         }
 
-        public async Task<IEnumerable<JournalEntryModel?>> GetByUserIdAsync(Guid userId)
+        /// <summary>
+        /// Retrieves a user from the provided user id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<IEnumerable<JournalEntryModel>> GetByUserIdAsync(Guid userId)
         {
-            try
-            {
-                return await _context.JournalEntries
-                    .Where(x => x.UserId == userId)
-                    .Include(x => x.MoodTags)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var existingUser = await _context.Users.FindAsync(userId) ?? throw new ArgumentException("User does not exist");
+
+            var journals = await _context.JournalEntries
+                .Where(x => x.UserId == userId)
+                .Include(x => x.MoodTags)
+                .ToListAsync();
+
+            if (journals == null)
+                return new List<JournalEntryModel>();
+
+            return journals;
         }
 
         public async Task InsertAsync(JournalEntryModel journalEntry)
         {
-            try
-            {
-                _context.JournalEntries.Add(journalEntry);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            var existingUser = await _context.Users.FindAsync(journalEntry.UserId) ?? throw new ArgumentException("User does not exist");
 
+            _context.JournalEntries.Add(journalEntry);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(JournalEntryModel updatedEntry)
@@ -88,9 +71,7 @@ namespace Cerebri.Infrastructure.Repositories
                     .FirstOrDefaultAsync(x => x.Id == updatedEntry.Id);
 
                 if (existingEntry == null)
-                {
                     throw new Exception("Journal entry does not exist");
-                }
 
                 existingEntry.Title = updatedEntry.Title;
                 existingEntry.Content = updatedEntry.Content;

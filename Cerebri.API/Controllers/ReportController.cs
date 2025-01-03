@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Cerebri.API.DTOs;
 using Cerebri.Application.Interfaces;
+using Cerebri.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,37 +14,43 @@ namespace Cerebri.API.Controllers
     public class ReportController : ControllerBase
     {
         private readonly IReportService _reportService;
+        private readonly IAuthService _authService;
         private readonly IMapper _mapper;
+        private readonly ILogger<ReportController> _logger;
 
-        public ReportController(IReportService reportService, IMapper mapper)
+        public ReportController(IReportService reportService, IMapper mapper, IAuthService authService, ILogger<ReportController> logger)
         {
             _reportService = reportService;
             _mapper = mapper;
+            _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("stream")]
         public async Task<IActionResult> StreamPdf([FromBody] Guid reportId)
         {
-            var report = await _reportService.GetById(reportId);
-            if (report == null)
+            try
             {
-                return BadRequest($"Could not find report with ID: {reportId}");
+                var report = await _reportService.GetById(reportId);
+                return File(report.ReportData, "application/pdf", report.ReportName);
             }
-            return File(report.ReportData, "application/pdf", report.ReportName);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.InnerException?.Message ?? ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException?.Message ?? ex.Message);
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var userIdClaim = User.FindFirst("userId");
-            if (userIdClaim == null)
-            {
-                return Unauthorized("Invalid token received");
-            }
-            var userId = Guid.Parse(userIdClaim.Value);
-
             try
             {
+                var userId = _authService.GetUserIdFromClaims(User);
                 var reports = await _reportService.GetByUserId(userId);
                 List<ReportResponseDTO> results = new List<ReportResponseDTO>();
                 foreach(var report in reports)
@@ -53,9 +60,15 @@ namespace Cerebri.API.Controllers
                 }
                 return Ok(results);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message);
+                return Unauthorized(ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
         
@@ -64,18 +77,19 @@ namespace Cerebri.API.Controllers
         {
             try
             {
-                var userIdClaim = User.FindFirst("userId");
-                if (userIdClaim == null)
-                {
-                    return Unauthorized("Invalid Token received");
-                }
-                var userId = Guid.Parse(userIdClaim.Value);
+                var userId = _authService.GetUserIdFromClaims(User);
                 var summary = await _reportService.GetSummary(userId);
                 return Ok(summary);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message);
+                return Unauthorized(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -84,21 +98,51 @@ namespace Cerebri.API.Controllers
         {
             try
             {
-                var userIdClaim = User.FindFirst("userId");
-                if (userIdClaim == null)
-                {
-                    return Unauthorized("Invalid Token received");
-                }
-                var userId = Guid.Parse(userIdClaim.Value);
+                var userId = _authService.GetUserIdFromClaims(User);
                 var report = await _reportService.GenerateReport(userId);
-                if (report == null)
-                {
-                    return Ok("could not generate report");
-                }
                 return File(report.ReportData, "application/pdf", report.ReportName);
-            } catch (Exception ex)
+            }
+            catch (UnauthorizedAccessException ex)
             {
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
+                _logger.LogInformation(ex.Message, ex);
+                return Unauthorized(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> Update([FromBody] ReportResponseDTO updatedReport)
+        {
+            try
+            {
+                var userId = _authService.GetUserIdFromClaims(User);
+                ReportModel reportModel = _mapper.Map<ReportModel>(updatedReport);
+                await _reportService.UpdateReport(reportModel);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogInformation(ex.Message, ex);
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
             }
         }
     }

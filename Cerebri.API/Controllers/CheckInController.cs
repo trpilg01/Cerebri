@@ -16,59 +16,89 @@ namespace Cerebri.API.Controllers
         private readonly ICheckInService _checkInService;
         private readonly IMapper _mapper;
         private readonly ILogger<CheckInController> _logger;
+        private readonly IAuthService _authService;
 
-        public CheckInController(ICheckInService checkInService, ILogger<CheckInController> logger, IMapper mapper)
+        public CheckInController(ICheckInService checkInService, ILogger<CheckInController> logger, IMapper mapper, IAuthService authService)
         {
             _checkInService = checkInService;
             _logger = logger;
             _mapper = mapper;
+            _authService = authService;
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateCheckInDTO request)
         {
-            var userIdClaim = User.FindFirst("userId");
-            if (userIdClaim == null)
+            try
             {
-                _logger.LogInformation("Invalid Token received");
-                return Unauthorized("Invalid token. Please login");
+                Guid userId = _authService.GetUserIdFromClaims(User);
+                CheckInModel checkIn = _mapper.Map<CheckInModel>(request);
+                checkIn.UserId = userId;
+                await _checkInService.CreateCheckIn(checkIn);
+                return Ok("CheckIn created");
             }
-            var userId = Guid.Parse(userIdClaim.Value);
-
-            CheckInModel checkIn = _mapper.Map<CheckInModel>(request);
-            checkIn.UserId = userId;
-            await _checkInService.CreateCheckInAsync(checkIn);
-            return Ok();
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var userIdClaim = User.FindFirst("userId");
-            if (userIdClaim == null)
+            try
             {
-                _logger.LogInformation("Invalid Token received");
-                return Unauthorized("Invalid token. Please login");
+                Guid userId = _authService.GetUserIdFromClaims(User);
+                var checkIns = await _checkInService.GetCheckInByUserId(userId);
+                return Ok(checkIns);
             }
-            var userId = Guid.Parse(userIdClaim.Value);
-
-            var checkIns = await _checkInService.GetCheckInByUserIdAsync(userId);
-            return Ok(checkIns);
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
+            }
         }
 
         [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] CheckInDeleteRequestDTO checkIn)
         {
-            var userIdClaim = User.FindFirst("userId");
-            if (userIdClaim == null)
+            try
             {
-                _logger.LogInformation("Invalid Token received");
-                return Unauthorized("Invalid token. Please login");
+                Guid userId = _authService.GetUserIdFromClaims(User);
+                await _checkInService.DeleteCheckIn(checkIn.Id);
+                return Ok("CheckIn deleted");
             }
-            var userId = Guid.Parse(userIdClaim.Value);
-
-            await _checkInService.DeleteCheckInAsync(checkIn.Id);
-            return Ok(new { message = "CheckIn deleted"});
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
+            }
         }
     }
 }

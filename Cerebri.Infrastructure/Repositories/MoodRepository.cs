@@ -26,6 +26,12 @@ namespace Cerebri.Infrastructure.Repositories
 
         public async Task<List<MoodModel>> GetMoodsByIdAsync(List<int> ids)
         {
+            var moods = await _context.Moods.Select(x => x.Id).ToListAsync();
+
+            // Check that every id provided is valid
+            if (ids.Any(x => !moods.Contains(x)))
+                throw new ArgumentException("Invalid mood ids provided");
+
             return await _context.Moods
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync();

@@ -20,72 +20,47 @@ namespace Cerebri.Infrastructure.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            try
-            {
-                var existingCheckIn = await _context.CheckIns
-                                            .Where(x => x.Id == id)
-                                            .FirstOrDefaultAsync();
+            var existingCheckIn = await _context.CheckIns
+                                        .Where(x => x.Id == id)
+                                        .FirstOrDefaultAsync();
 
-                if (existingCheckIn == null)
-                {
-                    throw new Exception("Check In does not exist");
-                }
+            if (existingCheckIn == null)
+                throw new ArgumentException("CheckIn does not exist");
 
-                _context.Remove(existingCheckIn);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            _context.Remove(existingCheckIn);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<CheckInModel?> GetByIdAsync(Guid id)
+        public async Task<CheckInModel> GetByIdAsync(Guid id)
         {
-            try
-            {
-                return await _context.CheckIns
-                    .Where(x => x.Id == id)
-                    .Include(x => x.MoodTags)
-                    .FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            var checkIn = await _context.CheckIns
+                .Where(x => x.Id == id)
+                .Include(x => x.MoodTags)
+                .FirstOrDefaultAsync();
+            if (checkIn == null)
+                throw new ArgumentException("CheckIn does not exist");
+            return checkIn;
         }
 
         public async Task<IEnumerable<CheckInModel?>> GetByUserIdAsync(Guid userId)
         {
-            try
-            {
-                return await _context.CheckIns
-                    .Where(x => x.UserId == userId)
-                    .Include(x => x.MoodTags)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            var existingUser = await _context.Users.FindAsync(userId);
+            if (existingUser == null)
+                throw new ArgumentException("User does not exist");
+
+            return await _context.CheckIns
+                .Where(x => x.UserId == userId)
+                .Include(x => x.MoodTags)
+                .ToListAsync();
         }
-        
 
         public async Task InsertAsync(CheckInModel checkIn)
         {
-            try
-            {
-                await _context.CheckIns.AddAsync(checkIn);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
-                throw new Exception(ex.InnerException?.Message ?? ex.Message);
-            }
+            var existingUser = await _context.Users.FindAsync(checkIn.UserId);
+            if (existingUser == null)
+                throw new ArgumentException("User does not exist");
+            await _context.CheckIns.AddAsync(checkIn);
+            await _context.SaveChangesAsync();
         }
 
         public Task UpdateAsync(CheckInModel checkIn)

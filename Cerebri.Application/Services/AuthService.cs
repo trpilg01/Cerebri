@@ -57,5 +57,13 @@ namespace Cerebri.Application.Services
         {
            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
+
+        public Guid GetUserIdFromClaims(ClaimsPrincipal user)
+        {
+            var userIdClaim = user.FindFirst("userId");
+            if (userIdClaim == null)
+                throw new UnauthorizedAccessException("User Id claim not found");
+            return Guid.Parse(userIdClaim.Value);
+        }
     }
 }

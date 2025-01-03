@@ -11,8 +11,8 @@ namespace Cerebri.Application.Interfaces
     {
         Task<OpenAIResponseModel?> GetSummary(Guid userId);
         Task<IEnumerable<ReportModel?>> GetByUserId(Guid userId);
-        Task<ReportModel?> GetById(Guid id);
-        Task<ReportModel?> GenerateReport(Guid userId);
-        
+        Task<ReportModel> GetById(Guid id);
+        Task<ReportModel> GenerateReport(Guid userId);
+        Task UpdateReport(ReportModel report);
     }
 }

@@ -10,10 +10,12 @@ namespace Cerebri.API.Controllers
     public class MoodController : ControllerBase
     {
         private readonly IMoodService _moodService;
+        private readonly ILogger<MoodController> _logger;
 
-        public MoodController(IMoodService moodService)
+        public MoodController(IMoodService moodService, ILogger<MoodController> logger)
         {
             _moodService = moodService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -26,7 +28,8 @@ namespace Cerebri.API.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

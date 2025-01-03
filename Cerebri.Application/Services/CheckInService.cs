@@ -7,31 +7,28 @@ namespace Cerebri.Application.Services
     {
         private readonly ICheckInRepository _checkInRepository;
         private readonly IMoodRepository _moodRepository;
-        
-        public CheckInService(ICheckInRepository checkInRepository, IMoodRepository moodRepository)
+        private readonly IUserRepository _userRepository;
+
+        public CheckInService(ICheckInRepository checkInRepository, IMoodRepository moodRepository, IUserRepository userRepository)
         {
             _checkInRepository = checkInRepository;
             _moodRepository = moodRepository;
+            _userRepository = userRepository;
         }
 
-        public async Task CreateCheckInAsync(CheckInModel checkIn)
+        public async Task CreateCheckIn(CheckInModel checkIn)
         {
             await _checkInRepository.InsertAsync(checkIn);
         }
 
-        public async Task DeleteCheckInAsync(Guid checkInId)
+        public async Task DeleteCheckIn(Guid checkInId)
         {
             await _checkInRepository.DeleteAsync(checkInId);
         }
 
-        public async Task<IEnumerable<CheckInResponseModel?>> GetCheckInByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<CheckInResponseModel?>> GetCheckInByUserId(Guid userId)
         {
             var checkIns = await _checkInRepository.GetByUserIdAsync(userId);
-
-            if (checkIns == null)
-            {
-                return new List<CheckInResponseModel>();
-            }
 
             List<CheckInResponseModel> responseModels = new List<CheckInResponseModel>();
 

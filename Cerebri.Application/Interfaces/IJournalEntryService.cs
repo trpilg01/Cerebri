@@ -5,7 +5,7 @@ namespace Cerebri.Application.Interfaces
 {
     public interface IJournalEntryService
     {
-        Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<MoodModel> moods);
+        Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<MoodModel> moods, Guid userId);
         Task<IEnumerable<JournalEntryResponseModel?>> GetJournalEntriesAsync(Guid userId);
         Task UpdateJournalEntryAsync(JournalEntryModel journalEntry, List<MoodModel> Moods);
         Task DeleteJournalEntryAsync(Guid entryId);
