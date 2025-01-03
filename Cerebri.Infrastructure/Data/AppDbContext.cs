@@ -45,6 +45,11 @@ namespace Cerebri.Infrastructure.Data
                     .WithOne(x => x.User)
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(x => x.Reports)
+                    .WithOne(x => x.User)
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<JournalEntryModel>(entity =>
@@ -134,11 +139,6 @@ namespace Cerebri.Infrastructure.Data
             {
                 entity.HasKey(x => x.Id);
 
-                entity.HasOne(x => x.User)
-                    .WithMany()
-                    .HasForeignKey(x => x.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 entity.Property(x => x.ReportName)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -147,7 +147,8 @@ namespace Cerebri.Infrastructure.Data
                     .IsRequired();
 
                 entity.Property(x => x.CreatedAt)
-                    .IsRequired();
+                    .IsRequired()
+                    .HasDefaultValueSql("GETUTCDATE()");
             });
 
 
