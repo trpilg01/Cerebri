@@ -17,6 +17,8 @@ namespace Cerebri.Domain.Entities
         [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters")]
         public string FirstName { get; set; }
         public List<JournalEntryModel> JournalEntries { get; set; }
+        public List<ReportModel> Reports { get; set; }
+        public List<CheckInModel> CheckIns { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
 
@@ -28,6 +30,7 @@ namespace Cerebri.Domain.Entities
             HashedPassword = hashedPassword;
             FirstName = string.Empty;
             JournalEntries = new List<JournalEntryModel>();
+            CheckIns = new List<CheckInModel>();
             UpdatedAt = DateTime.UtcNow;
             CreatedAt = DateTime.UtcNow;
         }

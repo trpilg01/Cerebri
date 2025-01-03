@@ -8,7 +8,10 @@ namespace Cerebri.Infrastructure.Data
         public DbSet<UserModel> Users { get; set; }
         public DbSet<JournalEntryModel> JournalEntries { get; set; }
         public DbSet<JournalEntryMoodModel> JournalEntryMoods { get; set; }
+        public DbSet<CheckInModel> CheckIns { get; set; }
+        public DbSet<CheckInMoodModel> CheckInMoods { get; set; }
         public DbSet<MoodModel> Moods { get; set; }
+        public DbSet<ReportModel> Reports { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -91,6 +94,63 @@ namespace Cerebri.Infrastructure.Data
                     .HasForeignKey(x => x.MoodId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<CheckInModel>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Content)
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("GETUTCDATE()");
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired()
+                    .HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasMany(x => x.MoodTags)
+                    .WithOne(x => x.CheckIn)
+                    .HasForeignKey(x => x.CheckInId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<CheckInMoodModel>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.HasOne(x => x.Mood)
+                    .WithMany()
+                    .HasForeignKey(x => x.MoodId);
+
+                entity.HasOne(x => x.CheckIn)
+                    .WithMany(x => x.MoodTags)
+                    .HasForeignKey(x => x.CheckInId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ReportModel>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.HasOne(x => x.User)
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(x => x.ReportName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(x => x.ReportData)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired();
+            });
+
+
         }
     }
 }

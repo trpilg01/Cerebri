@@ -29,3 +29,15 @@ export interface Journal {
     moods: Mood[]
     createdAt: Date
 }
+
+export interface CheckIn {
+    id: string
+    content: string
+    moods: Mood[]
+    createdAt: Date
+}
+
+export interface CreateCheckIn {
+    content: string
+    moods: Mood[]
+}

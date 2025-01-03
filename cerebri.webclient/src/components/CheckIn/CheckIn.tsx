@@ -1,158 +1,122 @@
+import { CreateCheckIn, Mood, Moods } from "data/dataTypes";
 import { useEffect, useState } from "react";
-import { getMoods, requestCreateJournal } from "services";
-import { IoClose } from "react-icons/io5";
-import { CreateJournalRequest, Mood, Moods } from "data/dataTypes";
-import { ErrorPopUp } from '..';
+import { getColor, getMoods, requestCreateCheckIn } from "services";
 
 interface CheckInProps {
     setShowOverlay: (value: boolean) => void;
-};
+}
 
-const todaysDate: string = new Date().toDateString();
-
-const CheckIn: React.FC<CheckInProps> = ({ setShowOverlay }) => {
-    const [title, setTitle] = useState<string>(todaysDate);
-    const [content, setContent] = useState<string>('');
+const CheckIn:React.FC<CheckInProps> = ({ setShowOverlay }) => {
     const [moods, setMoods] = useState<Moods | null>(null);
     const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [showError, setShowError] = useState<boolean>(false);
-
-    const handleCreate = async () => {
-        if (title.length === 0 || title.length > 100) {
-            setError("Test");
-            setShowError(true);
-            return;
-        }
-        if (content.length === 0 || content.length > 1000) {
-            alert("Invalid journal length.");
-            return;
-        }
-
-        const request: CreateJournalRequest = {
-            title: title,
-            content: content,
-            moods: selectedMoods
-        };
-
-        await requestCreateJournal(request);
-        setShowOverlay(false);
-    };
-
-    const handleSelectedMoodsChange = (mood: Mood) => {
+    const [notes, setNotes] = useState<string>('');
+    
+    const handleMoodSelection = (mood : Mood) => {
         setSelectedMoods((prevSelectedMoods) => {
             if (prevSelectedMoods.includes(mood)) {
                 return prevSelectedMoods.filter((item) => item !== mood);
             }
-
+            if (prevSelectedMoods.length === 3) {
+                return prevSelectedMoods;
+            }
             return [...prevSelectedMoods, mood];
         })
-    }
+    };
+
+    const handleSave = async () => {
+        const request: CreateCheckIn = {
+            content: notes,
+            moods: selectedMoods
+        }
+        await requestCreateCheckIn(request);
+        setShowOverlay(false);
+    } 
 
     useEffect(() => {
         const fetchMoods = async () => {
-            const response: Moods | null= await getMoods();
+            const response: Moods | null = await getMoods();
             setMoods(response);
-        };
+        }
 
         fetchMoods();
     }, [])
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="flex flex-row w-11/12 h-full bg-astra p-10 rounded-sm">
-                
-                {/* Exit button */}
-                <div className="fixed top-4 right-24" onClick={() => setShowOverlay(false)}>
-                    <IoClose size={24} cursor={'pointer'} />
-                </div>
-
-                {/* Text Entry */}
-                <div className="flex h-full w-2/3 bg-seaPink shadow-lg p-10 rounded-md justify-center">
-                    <div className="flex flex-col h-full w-full items-center ">
-                        <input
-                            type="text"
-                            value={title}
-                            maxLength={100}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="text-center font-semibold text-2xl bg-transparent border-none rounded-sm mb-4 h-10 w-42 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                        />
-                        <textarea
-                            id="content"
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            className="h-5/6 w-11/12 font-semibold rounded-sm shadow-md focus:outline-none p-4 focus:ring-2 focus:ring-blue-300"
-                            maxLength={1000}
-                        />
-                    </div>
-                </div>
-
-                {/* Mood Menu */}
-                <div className="flex flex-col h-full ml-2 w-1/3 p-10 rounded-md bg-blizzardBlue text-cneter items-center">
-                    <h1 className="text-lg font-semibold">Selected Moods</h1>
-                    
-                    <div className="flex flex-row flex-wrap h-24 mt-5">
-                    {selectedMoods.length === 0 ? <h1>No moods Selected</h1> : selectedMoods.map((mood) => (
-                        <a className="m-1">{mood.name}</a>
-                    ))}
-                    </div>
-
-                    <div className="flex-col h-full text-center justify-center overflow-y-scroll scrollbar-none">
-
-                        <h1 className="text-lg mb-3 font-bold">Low Energy Positive</h1>
+        <div className="fixed flex flex-col inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+            <div className="flex w-1/2 h-3/4 bg-astra p-10 rounded-md">
+            <div className="flex flex-col h-full w-full">
+                <div className="flex flex-row h-full w-full">
+                    {/* Mood Menu */}
+                    <div className="h-full p-2 w-2/3 mx-2 bg-slate-400 shadow-lg rounded-md overflow-y-scroll scrollbar-none">
+                        <h1 className="font-semibold m-2">Low Energy Positive Moods</h1>
                         {moods && moods.lowEnergyPositive.map((mood) => (
                             <button
-                                id={mood.id}
-                                onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-green-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}
+                                key={mood.id}
+                                className={`h-fit w-fit p-2 ${getColor(mood.type)} ${selectedMoods.includes(mood) ? 'opacity-55' : '' } rounded-md m-1 text-sm font-semibold cursor-pointer`}
+                                onClick={() => handleMoodSelection(mood)}
                             >
                                 {mood.name}
-                            </button>   
+                            </button>
                         ))}
 
-                        <h1 className="text-lg mb-3 mt-3 font-bold">Low Energy Negative</h1>
+                        <h1 className="font-semibold m-2">Low Energy Negative</h1>
                         {moods && moods.lowEnergyNegative.map((mood) => (
                             <button
-                                id={mood.id}
-                                onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-blue-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}                            >
-                                {mood.name}
-                            </button>   
-                        ))}
-
-                        <h1 className="text-lg mb-3 mt-3 font-bold">High Energy Positive</h1>
-                        {moods && moods.highEnergyPositive.map((mood) => (
-                            <button
-                                id={mood.id}
-                                onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-yellow-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}                            >
-                                {mood.name}
-                            </button>   
-                        ))}
-
-                        <h1 className="text-lg mb-4 mt-3 font-bold">High Energy Negative</h1>
-                        {moods && moods.highEnergyNegative.map((mood) => (
-                            <button
-                                id={mood.id}
-                                onClick={() => handleSelectedMoodsChange(mood)}
-                                className={`h-fit w-fit bg-red-400 p-1 m-1 rounded-lg cursor-pointer shadow-lg hover:opacity-55 ${selectedMoods.includes(mood) ? 'opacity-55' : ''}`}
+                                key={mood.id}
+                                className={`h-fit w-fit p-2 ${getColor(mood.type)} ${selectedMoods.includes(mood) ? 'opacity-55' : '' } rounded-md m-1 text-sm font-semibold cursor-pointer`}
+                                onClick={() => handleMoodSelection(mood)}
                             >
                                 {mood.name}
-                            </button>   
+                            </button>
+                        ))}
+
+                        <h1 className="font-semibold m-2">High Energy Negative</h1>
+                        {moods && moods.highEnergyNegative.map((mood) => (
+                            <button
+                                key={mood.id}
+                                className={`h-fit w-fit p-2 ${getColor(mood.type)} ${selectedMoods.includes(mood) ? 'opacity-55' : '' } rounded-md m-1 text-sm font-semibold cursor-pointer`}
+                                onClick={() => handleMoodSelection(mood)}
+                            >
+                                {mood.name}
+                            </button>
+                        ))}
+
+                        <h1 className="font-semibold m-2">High Energy Positive</h1>
+                        {moods && moods.highEnergyPositive.map((mood) => (
+                            <button
+                                key={mood.id}
+                                className={`h-fit w-fit p-2 ${getColor(mood.type)} ${selectedMoods.includes(mood) ? 'opacity-55' : '' } rounded-md m-1 text-sm font-semibold cursor-pointer`}
+                                onClick={() => handleMoodSelection(mood)}
+                            >
+                                {mood.name}
+                            </button>
                         ))}
                     </div>
-                    
-                    {/* Create Button */}
-                    <button
-                        onClick={handleCreate}
-                        className="h-fit mt-2 w-fit p-2 rounded-lg bg-seaPink font-bold text-black text-lg cursor-pointer
-                                   hover:opacity-55"
-                    >
-                        Create
-                    </button>
-                </div>
+                    <div className="flex flex-col w-1/3">
+                        <h1 className="font-semibold">Notes</h1>
+                        <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            className="w-full h-full p-2 shadow-lg rounded-md overflow-y-scroll scrollbar-none"
+                        />
+                    </div>
+                    </div>
+                </div>                
             </div>
-            {showError && <ErrorPopUp message={error} setShowError={setShowError}/>}
+            <div className="flex flex-row mt-2">
+                <button 
+                    onClick={handleSave}
+                    className="h-fit w-fit bg-green-200 rounded-md p-1 mx-2 font-semibold"
+                >
+                    Save
+                </button>
+                <button
+                    onClick={() => setShowOverlay(false)} 
+                    className="h-fit w-fit bg-red-200 rounded-md p-1 mx-2 font-semibold"
+                >
+                    Close
+                </button>
+            </div>
         </div>
     );
 };

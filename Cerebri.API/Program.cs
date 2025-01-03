@@ -1,7 +1,10 @@
 using Cerebri.Application.Interfaces;
 using Cerebri.Application.Services;
 using Cerebri.Infrastructure.Data;
+using Cerebri.Infrastructure.ReportGeneration;
 using Cerebri.Infrastructure.Repositories;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -53,6 +56,14 @@ builder.Services.AddScoped<IJournalEntryService, JournalEntryService>();
 builder.Services.AddScoped<IJournalEntryRepository, JournalEntryRepository>();
 builder.Services.AddScoped<IMoodRepository, MoodRepository>();
 builder.Services.AddScoped<IMoodService, MoodService>();
+builder.Services.AddScoped<ICheckInRepository, CheckInRepository>();
+builder.Services.AddScoped<ICheckInService, CheckInService>();
+builder.Services.AddScoped<IReportGenerator, ReportGenerator>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IOpenAIConnector, OpenAIConnector>();
+
+
 
 // Authentication
 builder.Services.AddAuthentication(options =>
@@ -73,6 +84,17 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true
     };
 });
+
+// Load libwkhtml.dll
+string libPath = Path.Combine(AppContext.BaseDirectory, "libwkhtmltox.dll");
+if (!File.Exists(libPath))
+{
+    throw new Exception($"libwkhtmltox.dll not found at {libPath}. Ensure the file is placed in the project directory.");
+}
+var context = new CustomAssemblyLoadContext();
+context.LoadUnmanagedLibrary(libPath);
+builder.Services.AddScoped<IConverter, SynchronizedConverter>(_ =>
+    new SynchronizedConverter(new PdfTools()));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

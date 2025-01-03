@@ -4,6 +4,7 @@ using Cerebri.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cerebri.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241231145752_AddedCheckInModel")]
+    partial class AddedCheckInModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,14 +36,10 @@ namespace Cerebri.Infrastructure.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -151,39 +150,6 @@ namespace Cerebri.Infrastructure.Migrations
                     b.ToTable("Moods");
                 });
 
-            modelBuilder.Entity("Cerebri.Domain.Entities.ReportModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<byte[]>("ReportData")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("ReportName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserModelId");
-
-                    b.ToTable("Reports");
-                });
-
             modelBuilder.Entity("Cerebri.Domain.Entities.UserModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -280,21 +246,6 @@ namespace Cerebri.Infrastructure.Migrations
                     b.Navigation("Mood");
                 });
 
-            modelBuilder.Entity("Cerebri.Domain.Entities.ReportModel", b =>
-                {
-                    b.HasOne("Cerebri.Domain.Entities.UserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cerebri.Domain.Entities.UserModel", null)
-                        .WithMany("Reports")
-                        .HasForeignKey("UserModelId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Cerebri.Domain.Entities.CheckInModel", b =>
                 {
                     b.Navigation("MoodTags");
@@ -310,8 +261,6 @@ namespace Cerebri.Infrastructure.Migrations
                     b.Navigation("CheckIns");
 
                     b.Navigation("JournalEntries");
-
-                    b.Navigation("Reports");
                 });
 #pragma warning restore 612, 618
         }

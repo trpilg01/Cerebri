@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { CreateJournalRequest, LoginRequest, Mood, Journal } from "data/dataTypes";
+import { CreateJournalRequest, LoginRequest, Mood, Journal, CheckIn, CreateCheckIn } from "data/dataTypes";
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: "http://localhost:5091/api",
@@ -102,3 +102,43 @@ export const requestDeleteJournal = async (entryId: string) => {
         console.log(error, error.message);
     }
 }
+
+export const requestCheckIns = async () => {
+    try {
+        const response = await apiClient.get('/CheckIn');
+        const checkIns: CheckIn[] = []
+
+        response.data.forEach((item : any) => {
+            const checkIn: CheckIn = {
+                id: item['id'],
+                content: item['content'],
+                moods: item['moods'],
+                createdAt: item['createdAt']
+            };
+            checkIns.push(checkIn);
+        });
+        
+        return checkIns;
+    } catch (error: any) {
+        console.log(error, error.message);
+    }
+}
+
+export const requestDeleteCheckIn = async (request: string) => {
+    try {
+        const response = await apiClient.post('/CheckIn/delete', {
+            id: request
+        });
+        return response.data
+    } catch (error: any){
+        console.log(error, error.message);
+    }
+}
+
+export const requestCreateCheckIn = async (request: CreateCheckIn) => {
+    try {
+        await apiClient.post('/CheckIn/create', request);
+    } catch (error: any) {
+        console.log(error, error.message);
+    }
+};

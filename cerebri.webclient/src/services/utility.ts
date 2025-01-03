@@ -35,3 +35,8 @@ export const getColor = (moodType: number) => {
             return 'bg-orange-200';
     }
 }
+
+export const getDateString = (date: Date) => {
+    const validDate = new Date(date);
+    return validDate.toLocaleDateString();
+}

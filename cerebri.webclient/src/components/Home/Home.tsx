@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { CheckIn } from "..";
+import { CheckIn, WriteComponent } from "..";
 
 const Home: React.FC = () => {
     const [activeOverlay, setActiveOverlay] = useState<ReactNode | null>(null);
@@ -9,7 +9,7 @@ const Home: React.FC = () => {
     const handleActiveOverlayChange = (overlay: ReactNode) => {
         setActiveOverlay(overlay);
         setShowOverlay(true);
-    }; 
+    };
 
     const renderActiveOverlay = () => {
         return activeOverlay;
@@ -21,11 +21,19 @@ const Home: React.FC = () => {
         >
             <h1 className="mb-10 text-3xl font-bold">{firstName ? `Welcome, ${firstName}` : "Welcome"}</h1>
             <div className="flex flex-row w-2/3 justify-evenly">
-                <div className="h-40 w-40 bg-bittersweet text-center cursor-pointer content-center rounded-full shadow-xl transition-transform 
+                
+                <div className="h-40 w-40 bg-seaPink text-center cursor-pointer content-center rounded-full shadow-xl transition-transform 
                                 transform hover:-translate-y-2"
                      onClick={() => handleActiveOverlayChange(<CheckIn setShowOverlay={setShowOverlay}/>)}
                 >
-                    <a className="font-bold text-xl">Check-In</a>
+                    <a className="font-bold text-xl">Check In</a>
+                </div>
+                
+                <div className="h-40 w-40 bg-bittersweet text-center cursor-pointer content-center rounded-full shadow-xl transition-transform 
+                                transform hover:-translate-y-2"
+                     onClick={() => handleActiveOverlayChange(<WriteComponent setShowOverlay={setShowOverlay}/>)}
+                >
+                    <a className="font-bold text-xl">Write</a>
                 </div>
             </div>
             {showOverlay && renderActiveOverlay()}

@@ -2,13 +2,10 @@ import { Journal } from "data/dataTypes";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
-import { getColor, requestDeleteJournal, requestJournals } from "services";
-import { CheckIn, ViewJournal } from '..';
+import { getColor, getDateString, requestDeleteJournal, requestJournals } from "services";
+import { WriteComponent, ViewJournal } from '..';
 
-const getDateString = (date: Date) => {
-    const validDate = new Date(date);
-    return validDate.toLocaleDateString();
-}
+
 
 
 const Journals = () => {
@@ -86,7 +83,7 @@ const Journals = () => {
                 </table>
             </div>
             {showViewJournal && <ViewJournal setShowViewJournal={setShowViewJournal} journal={selectedJournal}/>}
-            {showCreateJournal && <CheckIn setShowOverlay={setShowCreateJournal}/>}
+            {showCreateJournal && <WriteComponent setShowOverlay={setShowCreateJournal}/>}
         </div>
     );
 };
