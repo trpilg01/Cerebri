@@ -42,30 +42,24 @@ namespace Cerebri.Infrastructure.Repositories
             return checkIn;
         }
 
-        public async Task<IEnumerable<CheckInModel?>> GetByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<CheckInModel>> GetByUserIdAsync(Guid userId)
         {
-            var existingUser = await _context.Users.FindAsync(userId);
-            if (existingUser == null)
-                throw new ArgumentException("User does not exist");
+            var existingUser = await _context.Users.FindAsync(userId) ?? throw new ArgumentException("User does not exist");
 
-            return await _context.CheckIns
-                .Where(x => x.UserId == userId)
-                .Include(x => x.MoodTags)
-                .ToListAsync();
+            var checkIns =  await _context.CheckIns
+                    .Where(x => x.UserId == userId)
+                    .Include(x => x.MoodTags)
+                    .ToListAsync();
+
+            // return an empty list if check-ins is null
+            return checkIns ?? new List<CheckInModel>();
         }
 
         public async Task InsertAsync(CheckInModel checkIn)
         {
-            var existingUser = await _context.Users.FindAsync(checkIn.UserId);
-            if (existingUser == null)
-                throw new ArgumentException("User does not exist");
+            var existingUser = await _context.Users.FindAsync(checkIn.UserId) ?? throw new ArgumentException("User does not exist");
             await _context.CheckIns.AddAsync(checkIn);
             await _context.SaveChangesAsync();
-        }
-
-        public Task UpdateAsync(CheckInModel checkIn)
-        {
-            throw new NotImplementedException();
         }
     }
 }

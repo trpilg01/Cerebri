@@ -1,2 +1,2 @@
-export { default as LandingPage } from './LandingPage/LandingPage';
-export { default as ContentPage } from './ContentPage/ContentPage';
+export { default as LoginPage } from './LoginPage';
+export { default as ContentPage } from './ContentPage';

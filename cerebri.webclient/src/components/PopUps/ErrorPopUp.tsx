@@ -1,11 +1,9 @@
-
 interface ErrorPopUpProps {
-    setShowError: (value: boolean) => void;
+    setError: (value: string | null) => void;
     message: string | null;
 }
 
-const ErrorPopUp: React.FC<ErrorPopUpProps> = ({ message, setShowError }) => {
-
+const ErrorPopUp: React.FC<ErrorPopUpProps> = ({ message, setError}) => {
     return (
         <div 
             className="fixed flex flex-col z-[1000] h-[300px] w-[400px] shadow-2xl p-4 rounded-lg bg-slate-200
@@ -15,9 +13,9 @@ const ErrorPopUp: React.FC<ErrorPopUpProps> = ({ message, setShowError }) => {
             <a className="h-24 font-bold">{message}</a>
             <button
                 className="bg-blizzardBlue p-1 rounded-md shadow-sm font-bold" 
-                onClick={() => setShowError(false)}>Okay</button>
+                onClick={() => setError(null)}>Okay</button>
         </div>
-    )
-}
+    );
+};
 
 export default ErrorPopUp;

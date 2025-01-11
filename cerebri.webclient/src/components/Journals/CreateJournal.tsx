@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { getMoods, requestCreateJournal } from "services";
+import { useState } from "react";
+import { requestCreateJournal } from "services";
 import { IoClose } from "react-icons/io5";
-import { CreateJournalRequest, Mood, Moods } from "data/dataTypes";
+import { CreateJournalRequest, Mood } from "data/dataTypes";
 import { ErrorPopUp } from '..';
+import { useMoods } from "hooks";
 
 interface CheckInProps {
     setShowOverlay: (value: boolean) => void;
@@ -10,18 +11,16 @@ interface CheckInProps {
 
 const todaysDate: string = new Date().toDateString();
 
-const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
+const CreateJournal: React.FC<CheckInProps> = ({ setShowOverlay }) => {
     const [title, setTitle] = useState<string>(todaysDate);
     const [content, setContent] = useState<string>('');
-    const [moods, setMoods] = useState<Moods | null>(null);
     const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [showError, setShowError] = useState<boolean>(false);
+    const { moods } = useMoods();
 
     const handleCreate = async () => {
         if (title.length === 0 || title.length > 100) {
             setError("Test");
-            setShowError(true);
             return;
         }
         if (content.length === 0 || content.length > 1000) {
@@ -48,15 +47,6 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
             return [...prevSelectedMoods, mood];
         })
     }
-
-    useEffect(() => {
-        const fetchMoods = async () => {
-            const response: Moods | null= await getMoods();
-            setMoods(response);
-        };
-
-        fetchMoods();
-    }, [])
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -151,10 +141,10 @@ const WriteComponent: React.FC<CheckInProps> = ({ setShowOverlay }) => {
                         Create
                     </button>
                 </div>
+                {error && <ErrorPopUp message={error} setError={setError} />}
             </div>
-            {showError && <ErrorPopUp message={error} setShowError={setShowError}/>}
         </div>
     );
 };
 
-export default WriteComponent;
+export default CreateJournal;

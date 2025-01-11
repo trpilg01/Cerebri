@@ -34,6 +34,11 @@ namespace Cerebri.API.Controllers
                 await _userService.CreateUserAsync(newUser);
                 return Ok("User created successfully.");
             }
+            catch (ArgumentException ex)
+            {
+                _logger.LogInformation(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
             catch (InvalidOperationException ex)
             {
                 _logger.LogError(ex, "Validation error occurred while creating user");
@@ -70,6 +75,56 @@ namespace Cerebri.API.Controllers
             {
                 _logger.LogError(ex.InnerException?.Message ?? ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " +  ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("info")]
+        public async Task<IActionResult> GetUserInformation()
+        {
+            try
+            {
+                var userId = _authService.GetUserIdFromClaims(User);
+                var user = await _userService.GetUserByIdAsync(userId);
+                return Ok(_mapper.Map<UserInfoDTO>(user));
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("update")]
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequestDTO request)
+        {
+            try
+            {
+                var userId = _authService.GetUserIdFromClaims(User);
+                var userModel = _mapper.Map<UserModel>(request);
+                await _userService.UpdateUserAsync(userModel, userId);
+                return Ok("User updated");
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.InnerException?.Message ?? ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
             }
         }
     }

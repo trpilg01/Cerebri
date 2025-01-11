@@ -1,12 +1,9 @@
 export { default as ProtectedRoute } from './ProtectedRoute';
-export { default as Header } from './Header/Header';
-export { default as Login } from './Login/Login';
 export { default as Sidebar } from './Sidebar/Sidebar';
 export { default as Home } from './Home/Home';
-export { default as Journals } from './Journals/Journals';
-export { default as ViewJournal } from './ViewJournal/ViewJournal';
-export { default as ErrorPopUp } from './ErrorPopUp/ErrorPopUp'; 
-export { default as WriteComponent } from './WriteComponent/WriteComponent';
-export { default as CheckIns } from './CheckIns/CheckIns';
-export { default as CheckIn } from './CheckIn/CheckIn';
-export { default as MoodReports } from './MoodReports/MoodReports';
+export { default as ProfileInfo } from './ProfileInfo/ProfileInfo';
+export * from './CheckIns';
+export * from './Journals';
+export * from './Reports';
+export * from './PopUps';
+export * from './MoodMenu';

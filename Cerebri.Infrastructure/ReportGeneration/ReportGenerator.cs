@@ -18,13 +18,9 @@ namespace Cerebri.Infrastructure.ReportGeneration
             _reportRepository = repository;
         }
 
-        public async Task<ReportModel?> GenerateReport(List<JournalEntryModel?>? journals, Guid userId)
+        public async Task<ReportModel> GenerateReport(List<JournalEntryModel> journals, Guid userId, MoodModel 
+            mostCommonMood, string reportName = "New Report")
         {
-            if (journals == null || journals.Count == 0)
-            {
-                return null;
-            }
-
             var reportInfo = await GenerateReportInfo(journals);
 
             var pdfDocument = new HtmlToPdfDocument
@@ -72,9 +68,10 @@ namespace Cerebri.Infrastructure.ReportGeneration
                         </head>
                         <body>
                             <div class='header'>
-                                <h1>{DateTime.Now.Date.ToShortDateString()}</h1>
+                                <h1>{reportName}</h1>
                             </div>
                             <div class='content'>
+                                <h2>Most Common Mood: {mostCommonMood.Name}</h2>
                                 <h2>Summary:</h2>
                                 <p>{reportInfo?.Summary ?? "Error"}</p>
                                 <h2>Suggested Talking Points:</h2>
@@ -92,7 +89,7 @@ namespace Cerebri.Infrastructure.ReportGeneration
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                ReportName = "New Report Name",
+                ReportName = reportName,
                 ReportData = reportData,
                 CreatedAt = DateTime.UtcNow
             };

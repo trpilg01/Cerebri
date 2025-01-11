@@ -11,6 +11,7 @@ namespace Cerebri.Application.Interfaces
     {
         Task CreateUserAsync(UserModel newUser);
         Task DeleteUserAsync(Guid userId);
-        Task UpdateUserAsync(Guid userId);
+        Task UpdateUserAsync(UserModel updatedUser, Guid userId);
+        Task<UserModel> GetUserByIdAsync(Guid userId);
     }
 }

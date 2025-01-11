@@ -53,7 +53,7 @@ namespace Cerebri.API.Controllers
                 var userId = _authService.GetUserIdFromClaims(User);
                 var reports = await _reportService.GetByUserId(userId);
                 List<ReportResponseDTO> results = new List<ReportResponseDTO>();
-                foreach(var report in reports)
+                foreach (var report in reports)
                 {
                     var reportResponse = _mapper.Map<ReportResponseDTO>(report);
                     results.Add(reportResponse);
@@ -93,13 +93,13 @@ namespace Cerebri.API.Controllers
             }
         }
 
-        [HttpGet("generate")]
-        public async Task<IActionResult> CreateReport()
+        [HttpPost("generate")]
+        public async Task<IActionResult> GenerateReport([FromBody] RequestReportDTO request)
         {
             try
             {
                 var userId = _authService.GetUserIdFromClaims(User);
-                var report = await _reportService.GenerateReport(userId);
+                var report = await _reportService.GenerateReport(userId, request.StartDate, request.EndDate);
                 return File(report.ReportData, "application/pdf", report.ReportName);
             }
             catch (UnauthorizedAccessException ex)
@@ -124,7 +124,6 @@ namespace Cerebri.API.Controllers
         {
             try
             {
-                var userId = _authService.GetUserIdFromClaims(User);
                 ReportModel reportModel = _mapper.Map<ReportModel>(updatedReport);
                 await _reportService.UpdateReport(reportModel);
                 return Ok();
@@ -134,10 +133,25 @@ namespace Cerebri.API.Controllers
                 _logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (Exception ex)
             {
-                _logger.LogInformation(ex.Message, ex);
-                return Unauthorized(ex.Message);
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete([FromBody] DeleteReportDTO request)
+        {
+            try
+            {
+                await _reportService.DeleteReport(request.reportId);
+                return Ok("Report deleted");
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

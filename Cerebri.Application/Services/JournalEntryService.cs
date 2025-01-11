@@ -17,12 +17,8 @@ namespace Cerebri.Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task CreateJournalEntryAsync(JournalEntryModel journalEntry, List<MoodModel> moods, Guid userId)
+        public async Task CreateJournalEntryAsync(JournalEntryModel journalEntry, Guid userId)
         {
-            foreach (MoodModel mood in moods)
-            {
-                journalEntry.MoodTags.Add(new JournalEntryMoodModel(journalEntry.Id, mood.Id));
-            }
             journalEntry.UserId = userId;
             await _journalEntryRepository.InsertAsync(journalEntry);
         }

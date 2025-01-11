@@ -1,9 +1,9 @@
 import axios, { AxiosInstance } from "axios";
-import { CreateJournalRequest, LoginRequest, Mood, Journal, CheckIn, CreateCheckIn, ReportData } from "data/dataTypes";
+import { CreateJournalRequest, LoginRequest, Mood, Journal, CheckIn, CreateCheckInDTO, ReportData, UpdatedReport, DeleteReport, CreateReportRequest, UserInfo } from "data/dataTypes";
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: "http://localhost:5091/api",
-    timeout: 10000,
+    timeout: 50000,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -31,14 +31,9 @@ apiClient.interceptors.response.use(
 );
 
 export const requestLogin = async (request: LoginRequest) => {
-    try {
-        const response = await apiClient.post('/Auth/login', request);
-        localStorage.setItem("token", response.data["token"]);
-        return true;
-    } catch (error: any) {
-        console.log(error.message);
-        return error.message;
-    }
+    const response = await apiClient.post('/Auth/login', request);
+    localStorage.setItem("token", response.data["token"]);
+    return response;
 };
 
 export const requestMoods = async () => {
@@ -85,8 +80,7 @@ export const requestJournals = async () => {
 
 export const requestCreateJournal = async (request: CreateJournalRequest) => {
     try {
-        const response = await apiClient.post("/JournalEntry/create", request);
-        console.log(response);
+        await apiClient.post("/JournalEntry/create", request);
     } catch (error: any) {
         console.log(error, error.message);
     }
@@ -135,7 +129,7 @@ export const requestDeleteCheckIn = async (request: string) => {
     }
 }
 
-export const requestCreateCheckIn = async (request: CreateCheckIn) => {
+export const requestCreateCheckIn = async (request: CreateCheckInDTO) => {
     try {
         await apiClient.post('/CheckIn/create', request);
     } catch (error: any) {
@@ -171,5 +165,47 @@ export const requestReportStream = async (reportId: string) => {
 }
 
 export const requestUserInfo = async () => {
-    return;
+    try {
+        const response = await apiClient.get('/User/info');
+        const reportInfo: UserInfo = {
+            email: response.data['email'],
+            firstName: response.data['firstName']
+        }
+        return reportInfo;
+    } catch (err: any) {
+        console.log(err, err.message);
+    }
+}
+
+export const requestReportUpdate = async (updatedReport: UpdatedReport) => {
+    try {
+        const response = await apiClient.post('/Report/update', updatedReport);
+        return response.data;
+    } catch (error: any) {
+        console.log(error, error.message);
+    }
+}
+
+export const requestReportDelete = async (report: DeleteReport) => {
+    try {
+        await apiClient.post('/Report/delete', report);
+    } catch (err: any) {
+        console.log(err.message || "Error deleting report");
+    }
+}
+
+export const requestCreateReport = async (request: CreateReportRequest) => {
+    try {
+        await apiClient.post('/Report/generate', request);
+    } catch (err: any) {
+        console.log(err.message || "Error creating report");
+    }
+}
+
+export const requestUpdateUserInfo = async (request: UserInfo) => {
+    try {
+        await apiClient.post('/User/update', request);
+    } catch (err: any) {
+        console.log(err.message || "Error updating user");
+    }
 }

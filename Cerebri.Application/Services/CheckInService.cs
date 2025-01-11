@@ -26,7 +26,7 @@ namespace Cerebri.Application.Services
             await _checkInRepository.DeleteAsync(checkInId);
         }
 
-        public async Task<IEnumerable<CheckInResponseModel?>> GetCheckInByUserId(Guid userId)
+        public async Task<IEnumerable<CheckInResponseModel?>> GetChecksInByUserId(Guid userId)
         {
             var checkIns = await _checkInRepository.GetByUserIdAsync(userId);
 

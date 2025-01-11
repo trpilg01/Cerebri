@@ -34,7 +34,7 @@ namespace Cerebri.API.Controllers
             {
                 var userId = _authService.GetUserIdFromClaims(User);
                 var entry = _mapper.Map<JournalEntryModel>(request);
-                await _journalEntryService.CreateJournalEntryAsync(entry, request.Moods, userId);
+                await _journalEntryService.CreateJournalEntryAsync(entry, userId);
                 return Ok("Journal Entry Created");
             }
             catch (UnauthorizedAccessException ex)

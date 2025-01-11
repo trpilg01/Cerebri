@@ -6,5 +6,6 @@ namespace Cerebri.Application.Interfaces
     {
         Task<IEnumerable<MoodModel>> GetMoods();
         Task<List<MoodModel>> GetMoodsByIdAsync(List<int> ids);
+        Task<MoodModel> GetByIdAsync(int id);
     }
 }

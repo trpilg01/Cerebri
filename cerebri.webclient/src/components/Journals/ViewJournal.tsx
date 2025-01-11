@@ -4,15 +4,15 @@ import { getColor } from "services";
 
 interface ViewJournalProps {
     journal: Journal | null;
-    setShowViewJournal: (value: boolean) => void;
+    setSelectedJournal: (value: Journal | null) => void;
 }
 
-const ViewJournal: React.FC<ViewJournalProps> = ({ journal, setShowViewJournal }) => {
+const ViewJournal: React.FC<ViewJournalProps> = ({ journal, setSelectedJournal }) => {
     return (
         <div className="fixed flex-col inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="h-[95%] p-3 flex flex-col rounded-md w-1/2 bg-pearlLusta just-center text-center">
                 <div className="flex justify-end mr-2">
-                    <IoMdClose size={20} onClick={() => setShowViewJournal(false)} cursor={'pointer'}/>
+                    <IoMdClose size={20} onClick={() => setSelectedJournal(null)} cursor={'pointer'}/>
                 </div>
                 <h1 className="mt-10 text-3xl">{journal?.title}</h1>
                 <div className="flex flex-row h-fit w-full justify-center">

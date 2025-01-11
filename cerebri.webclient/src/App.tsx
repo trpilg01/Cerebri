@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { LandingPage, ContentPage } from 'pages';
+import { LoginPage, ContentPage } from 'pages';
 import { ProtectedRoute } from 'components';
 function App() {
 
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={<LoginPage />} />
                 <Route
                     path="/content"
                     element={

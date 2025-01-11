@@ -39,7 +39,13 @@ namespace Cerebri.Infrastructure.Repositories
 
         public async Task UpdateAsync(UserModel user)
         {
-            _context.Users.Update(user);
+            var existingUser = await _context.Users.FindAsync(user.Id) ?? throw new ArgumentException("User does not exist");
+            
+            // Currently can only update email and first name
+            existingUser.Email = user.Email;
+            existingUser.FirstName = user.FirstName;
+
+            _context.Users.Update(existingUser);
             await _context.SaveChangesAsync();
         }
     }

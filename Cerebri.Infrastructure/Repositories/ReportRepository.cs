@@ -18,6 +18,13 @@ namespace Cerebri.Infrastructure.Repositories
             _logger = logger;
         }
 
+        public async Task DeleteAsync(Guid reportId)
+        {
+            var existingReport = await _context.Reports.FindAsync(reportId) ?? throw new ArgumentException("Report does not exist");
+            _context.Reports.Remove(existingReport);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<ReportModel> GetByIdAsync(Guid reportId)
         {
             return await _context.Reports.FindAsync(reportId) ?? throw new ArgumentException($"Report with id: {reportId} does not exist");

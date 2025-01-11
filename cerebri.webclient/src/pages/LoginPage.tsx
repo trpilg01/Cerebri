@@ -1,56 +1,54 @@
-import React, { useState } from 'react';
-import { IoMdClose } from "react-icons/io";
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import cerebriLogo  from 'assets/cerebri_logo.png';
 import { LoginRequest } from 'data/dataTypes';
+import { FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { requestLogin } from 'services';
 
-interface LoginProps {
-    setShowLogin: (value: boolean) => void;
-}
-
-const Login: React.FC<LoginProps> = ({ setShowLogin }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const LoginPage = () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
+        setError(null);
         if (email.length === 0 || password.length === 0) {
-            setError("Please fill out all fields");
-            return;
+            setError("All fields are required");
         }
 
+        const request: LoginRequest = { email: email, password: password }
+        
         try {
-            const request: LoginRequest = { email: email, password: password }
             const response = await requestLogin(request);
-
-            if (response === true) {
+            if (response.status === 200){
                 navigate('/content');
             }
-            if (typeof(response) === 'string') {
-                setError(response);
+        } catch (err: any) {
+            if (err.response && err.response.status === 400){
+                setError("Invalid email or password");
+            } else {
+                setError("An unexpected error occurred. Please try again later");
             }
-        } catch (error: any) {
-            setError(error.message);
-            return;
         }
     }
-    
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="login-overlay">
-                <div className="login-overlay__detail">
-                    <h1>Cerebri</h1>
-                </div>
 
-                <div className="flex flex-col justify-center items-center w-1/3">
-                    <div className='fixed top-5 right-8 cursor-pointer' onClick={() => setShowLogin(false)}>
-                        <IoMdClose size={20} />
+    return (
+        <div className="flex h-screen w-full bg-pearlLusta overflow-hidden">
+            <div className='flex flex-row items-center w-full h-full'>
+                {/* Logo */}
+                <div className='flex w-3/4 h-full justify-center items-center'>
+                    <div className='flex h-3/4 w-3/4 justify-center items-center'>
+                        <img 
+                            src={cerebriLogo}
+                            alt='Image'
+                            className='h-full rounded-full shadow-2xl'
+                        />
                     </div>
-                    <form 
+                </div>
+                {/* Login */}
+                <div className='flex flex-col w-1/4 h-full bg-bittersweet shadow-inner p-2 justify-center items-center'>
+                <form 
                         onSubmit={(e) => handleSubmit(e)} 
                         className='bg-gray-100 p-6 rounded-lg shadow-md w-80 h-1/3 flex flex-col justify-center items-center space-y-5'
                     >
@@ -84,16 +82,11 @@ const Login: React.FC<LoginProps> = ({ setShowLogin }) => {
                             Login
                         </button>
                     </form>
-                    {error && (
-                            <div className="mt-3 h-fit w-fit text-center text-red-500">
-                                <h1>Error Logging in:</h1>
-                                <a>{error}</a>
-                            </div>
-                        )}
+                    {error && <a className='mt-2 font-bold'>{error}</a>}
                 </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default LoginPage;

@@ -55,7 +55,7 @@ namespace Cerebri.API.Controllers
             try
             {
                 Guid userId = _authService.GetUserIdFromClaims(User);
-                var checkIns = await _checkInService.GetCheckInByUserId(userId);
+                var checkIns = await _checkInService.GetChecksInByUserId(userId);
                 return Ok(checkIns);
             }
             catch (ArgumentException ex)

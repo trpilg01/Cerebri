@@ -19,6 +19,11 @@ namespace Cerebri.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<MoodModel> GetByIdAsync(int id)
+        {
+            return await _context.Moods.FindAsync(id) ?? throw new ArgumentException("Invalid mood id");
+        }
+
         public async Task<IEnumerable<MoodModel>> GetMoods()
         {
             return await _context.Moods.ToListAsync();
