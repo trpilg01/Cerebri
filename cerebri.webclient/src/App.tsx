@@ -8,7 +8,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<LoginPage />} />
                 <Route
-                    path="/content"
+                    path="/content/*"
                     element={
                         <ProtectedRoute>
                             <ContentPage />

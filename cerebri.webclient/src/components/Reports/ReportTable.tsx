@@ -1,4 +1,4 @@
-import ReportRow from "components/Reports/ReportRow";
+import ReportRow from "components/reports/ReportRow";
 import { FaPlus } from "react-icons/fa6";
 import { ReportData } from "data/dataTypes";
 

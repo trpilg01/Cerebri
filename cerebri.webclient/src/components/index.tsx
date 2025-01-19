@@ -1,9 +1,7 @@
-export { default as ProtectedRoute } from './ProtectedRoute';
-export { default as Sidebar } from './Sidebar/Sidebar';
-export { default as Home } from './Home/Home';
-export { default as ProfileInfo } from './ProfileInfo/ProfileInfo';
-export * from './CheckIns';
-export * from './Journals';
-export * from './Reports';
-export * from './PopUps';
-export * from './MoodMenu';
+export { default as ProtectedRoute } from './common/ProtectedRoute';
+export { default as Sidebar } from './common/Sidebar';
+export * from './checkins';
+export * from './journals';
+export * from './reports';
+export * from './popups';
+export * from './moodmenu';

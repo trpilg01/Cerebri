@@ -23,7 +23,7 @@ export const getMoods = async () => {
     return null;
 }
 
-export const getColor = (moodType: number) => {
+export const getMoodColor = (moodType: number) => {
     switch(moodType) {
         case(0):
             return 'bg-red-200';

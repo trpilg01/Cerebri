@@ -1,6 +1,6 @@
 import { Journal } from "data/dataTypes";
 import { IoMdClose } from "react-icons/io";
-import { getColor } from "services";
+import { getMoodColor } from "services";
 
 interface ViewJournalProps {
     journal: Journal | null;
@@ -19,7 +19,7 @@ const ViewJournal: React.FC<ViewJournalProps> = ({ journal, setSelectedJournal }
                     {journal?.moods.map((mood) => 
 
                             <button
-                                className={`h-fit w-fit rounded-md p-2 my-4 text-sm mx-1 shadow-md ${getColor(mood.type)}`}
+                                className={`h-fit w-fit rounded-md p-2 my-4 text-sm mx-1 shadow-md ${getMoodColor(mood.type)}`}
                             >
                                 {mood.name}
                             </button>

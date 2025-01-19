@@ -1,6 +1,6 @@
 import { CheckIn } from "data/dataTypes";
 import { FaTrash } from "react-icons/fa";
-import { getColor, getDateString } from "services";
+import { getMoodColor, getDateString } from "services";
 
 interface CheckInRowProps {
     checkIn: CheckIn;
@@ -13,7 +13,7 @@ const CheckInRow:React.FC<CheckInRowProps> = ({ checkIn, onDelete }) => (
         <td className="max-h-11 w-1/4 flex flex-row items-center justify-center gap-2">
             {checkIn.moods.map((mood) => (
                 <div
-                    className={`p-1 font-semibold text-sm shadow-md rounded-md ${getColor(mood.type)}`}
+                    className={`p-1 font-semibold text-sm shadow-md rounded-md ${getMoodColor(mood.type)}`}
                 >
                     {mood.name}
                 </div>

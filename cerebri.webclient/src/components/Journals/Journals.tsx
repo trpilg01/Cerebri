@@ -1,7 +1,7 @@
 import { Journal } from "data/dataTypes";
 import { useState } from "react";
 import { CreateJournal, ViewJournal, ErrorPopUp } from '..';
-import JournalsTable from "components/Journals/JournalsTable";
+import JournalsTable from "components/journals/JournalsTable";
 import useJournals from "hooks/useJournals";
 
 const Journals = () => {

@@ -1,23 +1,17 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { MdMenuOpen } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
-import { CheckIns, Home, Journals, Reports, ProfileInfo } from "..";
+import { useNavigate, Link } from "react-router-dom";
 
-interface SidebarProps {
-    setActiveComponent: (component: ReactNode) => void;
-}
-
-const Sidebar = ( props: SidebarProps ) => {
-    const { setActiveComponent } = props;
+const Sidebar = () => {
     const [isOpen, setIsOpen] = useState<boolean>(true);
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         navigate('/');
-    }
+    };
 
     return (
         <div
@@ -34,23 +28,23 @@ const Sidebar = ( props: SidebarProps ) => {
 
             <div className={`flex flex-col h-full w-full justify-between text-lg text-center transition-all duration-100 ${isOpen ? 'visible' : 'invisible' }`}>
                 <div className="flex flex-col text-lg text-center font-semibold">
-                    <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<Home />)}>Home</a>
-                    <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<Journals />)}>Journals</a>
-                    <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<CheckIns />)}>Check-Ins</a>
-                    <a className="cursor-pointer hover:opacity-50" onClick={() => setActiveComponent(<Reports />)}>Reports</a>
+                    <Link to='/content/'>Home</Link>
+                    <Link to='/content/journals'>Journals</Link>
+                    <Link to='/content/checkins'>Check-Ins</Link>
+                    <Link to='/content/reports'>Reports</Link>
                 </div>
 
-                <div className="flex flex-col h-fit w-full">
+                <div className="flex flex-col h-fit w-full items-center">
                     <div 
-                        className="flex flex-row p-2 items-center cursor-pointer gap-2"
+                        className="flex flex-row p-2 items-center cursor-pointer gap-4"
                         onClick={handleLogout}
                     >
                         <CiLogout size={24} />
-                        <a className="font-semibold">Logout</a>
+                        <a className="font-semibold" onClick={handleLogout}>Logout</a>
                     </div>
-                    <div className="flex flex-row p-2 items-center cursor-pointer gap-2" onClick={() => setActiveComponent(<ProfileInfo />)}>
+                    <div className="flex flex-row p-2 items-center cursor-pointer gap-4">
                         <IoSettingsOutline size={24} />
-                        <a className="font-semibold">Profile</a>
+                        <Link to='/content/settings' className="font-semi">Settings</Link>
                     </div>
                 </div>
             </div>

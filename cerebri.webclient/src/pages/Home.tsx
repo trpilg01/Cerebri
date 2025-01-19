@@ -1,8 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
-import { CreateCheckIn, CreateJournal } from "..";
+import { CreateCheckIn, CreateJournal } from "components";
 import { requestUserInfo } from "services";
 
-const Home: React.FC = () => {
+const Home = () => {
     const [activeOverlay, setActiveOverlay] = useState<ReactNode | null>(null);
     const [showOverlay, setShowOverlay] = useState<boolean>(false);
     const [firstName, setFirstName] = useState<string | undefined>(undefined);

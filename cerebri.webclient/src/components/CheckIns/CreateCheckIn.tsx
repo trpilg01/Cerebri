@@ -1,5 +1,5 @@
-import ErrorPopUp from "components/PopUps/ErrorPopUp";
-import MoodMenu from "components/MoodMenu/MoodMenu";
+import ErrorPopUp from "components/popups/ErrorPopUp";
+import MoodMenu from "components/moodmenu/MoodMenu";
 import { CreateCheckInDTO, Mood } from "data/dataTypes";
 import { useCheckIns, useMoods } from "hooks";
 import { useState } from "react";

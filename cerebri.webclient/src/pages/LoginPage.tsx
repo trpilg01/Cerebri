@@ -22,7 +22,7 @@ const LoginPage = () => {
         try {
             const response = await requestLogin(request);
             if (response.status === 200){
-                navigate('/content');
+                navigate('/content/');
             }
         } catch (err: any) {
             if (err.response && err.response.status === 400){

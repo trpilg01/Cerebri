@@ -4,7 +4,7 @@ import { requestUpdateUserInfo, requestUserInfo } from "services";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdEdit } from "react-icons/md";
 
-const ProfileInfo = () => {
+const Settings = () => {
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [firstName, setFirstName] = useState<string>('');
@@ -117,4 +117,4 @@ const ProfileInfo = () => {
     );
 };
 
-export default ProfileInfo;
+export default Settings;
